@@ -10,11 +10,12 @@ from typing import Union, List
 import discord
 
 # Configuration
-EMOJI = 'custom_emoji_name'
-ROLE = 'Role1'
-TARGET = 'jail'
-MESSAGE = "Your message has been moved!"
-
+EMOJI = 'Thonk_Bonk'
+ROLE = 'janitor'
+TARGET = 'horny-jail-v-1'
+MESSAGE = "We appreciate your enthusiasm for our discord server and respect your desire to express your " + \
+    "sexuality. However, your message is not appropriate for the location you posted it. We ask that you respect the " + \
+    "boundaries of other members of our community and ask you continue your conversation here."
 
 # Configure Logging
 logging.basicConfig()
@@ -36,6 +37,7 @@ def get_emoji_name(emoji: Union[discord.Emoji, discord.PartialEmoji, str]):
     else:
         return emoji.name
 
+
 def get_role_names(roles: List[discord.Role]):
     """
     Returns the names as strings of a list of roles.
@@ -55,6 +57,7 @@ def build_formatted_text(mention_string, text):
         res += "> " + line
     return res
 
+
 class BonkBot(discord.Client):
 
     def __init__(self, **options):
@@ -67,6 +70,9 @@ class BonkBot(discord.Client):
     async def on_ready(self):
         logger.info("Client ready")
         self.target_channel = discord.utils.get(self.get_all_channels(), name=TARGET)
+        if self.target_channel is None:
+            logger.warning(f"Target channel {TARGET} does not exist")
+            return
         logger.info(f"Set target channel to {self.target_channel.name}")
 
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.Member):
@@ -78,7 +84,8 @@ class BonkBot(discord.Client):
             logger.info(f"{reaction.message.id} bonked by {user.display_name}")
             message_text = reaction.message.content
             await reaction.message.delete()
-            new_message = await self.target_channel.send(build_formatted_text(reaction.message.author.mention, message_text))
+            new_message = await self.target_channel.send(
+                build_formatted_text(reaction.message.author.mention, message_text))
             logger.info(f"Successfully moved {reaction.message.id} to {new_message.id}")
 
 
