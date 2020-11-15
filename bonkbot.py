@@ -12,10 +12,8 @@ import discord
 # Configuration
 EMOJI = 'Thonk_Bonk'
 ROLE = 'janitor'
-TARGET = 'horny-jail-v-1'
-MESSAGE = "We appreciate your enthusiasm for our discord server and respect your desire to express your " + \
-    "sexuality. However, your message is not appropriate for the location you posted it. We ask that you respect the " + \
-    "boundaries of other members of our community and ask you continue your conversation here."
+TARGET = 'bonkable-quotes'
+MESSAGE = "Please keep NSFW conversations limited to abyss channels."
 
 # Configure Logging
 logging.basicConfig()
@@ -45,14 +43,14 @@ def get_role_names(roles: List[discord.Role]):
     return [role.name for role in roles]
 
 
-def build_formatted_text(mention_string, text):
+def build_formatted_text(mention_string, bonker, text):
     """
     Construct a formatted text block to send in the target channel
     :param mention_string: Name of the user who sent the message
     :param text: The text of the original message
     :return: A formatted block string to send.
     """
-    res = f"{mention_string}\n{MESSAGE}\n"
+    res = f"{mention_string} has been bonked by {bonker}\n{MESSAGE}\n"
     for line in text.split("\n"):
         res += "> " + line
     return res
@@ -85,7 +83,7 @@ class BonkBot(discord.Client):
             message_text = reaction.message.content
             await reaction.message.delete()
             new_message = await self.target_channel.send(
-                build_formatted_text(reaction.message.author.mention, message_text))
+                build_formatted_text(reaction.message.author.mention, user.mention, message_text))
             logger.info(f"Successfully moved {reaction.message.id} to {new_message.id}")
 
 
