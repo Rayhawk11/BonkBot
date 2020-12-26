@@ -12,8 +12,9 @@ import discord
 # Configuration
 EMOJI = 'Thonk_Bonk'
 ROLE = 'janitor'
-TARGET = 'bonkable-quotes'
-MESSAGE = "Please keep NSFW conversations limited to abyss channels."
+TARGET = 'bonk'
+MESSAGE = 'Please keep NSFW conversations limited to abyss channels.'
+BLACKLISTED_STRINGS = {'https://media.discordapp.net/attachments/650552561019125780/788593749600632892/1607974944336.gif', 'https://tenor.com/view/among-us-twerk-yellow-ass-thang-gif-18983570', ':BonkCircumventer:'}
 
 # Configure Logging
 logging.basicConfig()
@@ -85,6 +86,16 @@ class BonkBot(discord.Client):
             new_message = await self.target_channel.send(
                 build_formatted_text(reaction.message.author.mention, user.mention, message_text))
             logger.info(f"Successfully moved {reaction.message.id} to {new_message.id}")
+
+    async def on_message(self, message):
+        if message.author == self.user:
+            return
+        if any(substring in message.content for substring in BLACKLISTED_STRINGS):
+            logger.info(f"{message.id} bonked for containing blacklisted string")
+            message_text = message.content
+            await message.delete()
+            new_message = await self.target_channel.send(build_formatted_text(message.author.mention, 'BonkBot', message_text))
+            logger.info(f"Successfully moved {message.id} to {new_message.id}")
 
 
 if __name__ == '__main__':
